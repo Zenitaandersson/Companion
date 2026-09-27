@@ -1,0 +1,93 @@
+/*
+  Companion design tokens.
+  Warm, high-contrast palette. Red appears only on the Help call button.
+  Sizes are in rem so the whole layout follows the phone's text-size setting.
+*/
+:root {
+  --bg: #fbf6ee;
+  --surface: #ffffff;
+  --sand: #f1e4cc;
+  --sand-strong: #e3d0ab;
+  --text: #2b2118;
+  --muted: #5c4a3a;
+  --accent: #8a5a14;
+  --accent-strong: #5e3d0c;
+  --highlight: #ffe7a8;
+  --border: #c9b594;
+  --focus: #1f5f5b;
+  --help-red: #b3261e;
+  --help-red-strong: #8c1c16;
+
+  --tap: 88px; /* minimum tap target */
+  --gap: 1rem;
+  --radius: 22px;
+  --shadow: 0 2px 6px rgba(43, 33, 24, 0.12);
+}
+
+html {
+  /* Fallback for Android, then Apple's Dynamic Type hook so rem follows the user's text size. */
+  font-size: 16px;
+  font: -apple-system-body;
+  -webkit-text-size-adjust: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1.5rem; /* 24px at default text size */
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 4px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Gentle fades only. Nothing blinks or slides. */
+@media (prefers-reduced-motion: no-preference) {
+  .fade-in {
+    animation: fade-in 220ms ease-out;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

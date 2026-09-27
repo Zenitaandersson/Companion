@@ -1,0 +1,256 @@
+/* Carer mode: standard forms, still large and calm, but denser than Person mode. */
+
+.carer {
+  min-height: 100dvh;
+  background: #f6efe3;
+  color: var(--text);
+  font-size: 1.125rem;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+}
+
+.carer__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem var(--gap);
+  background: var(--sand);
+  border-bottom: 2px solid var(--sand-strong);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.carer__title {
+  flex: 1;
+  margin: 0;
+  font-size: 1.25em;
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.carer__body {
+  padding: var(--gap);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.carer-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 56px;
+  padding: 0.5rem 1rem;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+}
+
+.carer-button--primary {
+  background: var(--accent);
+  border-color: var(--accent-strong);
+  color: #fff;
+}
+
+.carer-button--danger {
+  color: var(--help-red-strong);
+}
+
+.carer-button--small {
+  min-height: 44px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.9em;
+}
+
+.carer-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.carer-button--block {
+  width: 100%;
+}
+
+.menu-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  min-height: 72px;
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  border: 2px solid var(--sand-strong);
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu-card__icon {
+  font-size: 1.6em;
+  width: 2em;
+  text-align: center;
+}
+
+.menu-card__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-card__title {
+  font-weight: 700;
+}
+
+.menu-card__hint {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field__label {
+  font-weight: 700;
+}
+
+.field__hint {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.field input[type='text'],
+.field input[type='tel'],
+.field input[type='time'],
+.field input[type='date'],
+.field textarea,
+.field select {
+  font: inherit;
+  min-height: 56px;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  width: 100%;
+}
+
+.field textarea {
+  min-height: 7em;
+  resize: vertical;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 56px;
+  cursor: pointer;
+}
+
+.toggle input {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 14px;
+  border: 2px solid var(--sand-strong);
+  background: var(--surface);
+}
+
+.list-item__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-item__title {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.list-item__sub {
+  color: var(--muted);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+.list-item__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--sand);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.pin-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  max-width: 360px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 2em;
+  letter-spacing: 0.2em;
+  min-height: 1.5em;
+}
+
+.notice {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--highlight);
+  border: 2px solid var(--accent);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--sand-strong);
+}
+
+.wizard-steps {
+  color: var(--muted);
+  font-weight: 600;
+}
