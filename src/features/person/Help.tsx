@@ -14,11 +14,14 @@ interface Props {
   onBackToToday: () => void;
 }
 
-/** One big call button and one kind message. Location is shared only if the carer allowed it. */
+/**
+ * One big call button and one kind message. The call goes only to the contact the carer chose.
+ * Location is shared only if the carer allowed it in carer mode, and never prompts here.
+ */
 export function Help({ profile, contacts, onBackToToday }: Props) {
   const { t } = useTranslation();
   const [shared, setShared] = useState(false);
-  const primary = contacts.find((c) => c.id === profile.primaryContactId) ?? contacts[0];
+  const primary = contacts.find((c) => c.id === profile.primaryContactId);
   const href = primary ? callHref(primary) : null;
   const reassurance = profile.reassuranceText || t('help.defaultReassurance');
 
@@ -38,17 +41,9 @@ export function Help({ profile, contacts, onBackToToday }: Props) {
   return (
     <Screen title={t('help.title')} onBackToToday={onBackToToday} center>
       {href && primary ? (
-        <a
-          className="big-button big-button--help"
-          href={href}
-          onClick={onHelpPressed}
-          data-testid="help-call"
-        >
-          <span className="big-button__icon" aria-hidden="true">
-            📞
-          </span>
-          <span>{t('help.callPrimary', { name: primary.firstName })}</span>
-        </a>
+        <BigButton variant="help" icon="📞" href={href} onClick={onHelpPressed} data-testid="help-call">
+          {t('help.callPrimary', { name: primary.firstName })}
+        </BigButton>
       ) : (
         <p className="big-text muted" style={{ textAlign: 'center' }}>
           {t('help.callNobody')}

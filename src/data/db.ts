@@ -62,12 +62,14 @@ export function updateProfile(
   });
 }
 
-/** Records a quiet usage event for the weekly summary. */
+/** Records a quiet usage event for the weekly summary. Records nothing while the summary is off. */
 export async function acknowledge(
   kind: Acknowledgement['kind'],
   refId: number | null,
   database: CompanionDB = db,
 ): Promise<void> {
+  const profile = await getProfile(database);
+  if (!profile.weeklySummaryEnabled) return;
   await database.acknowledgements.add({ kind, refId, at: Date.now() });
 }
 

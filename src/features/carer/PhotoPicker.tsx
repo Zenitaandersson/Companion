@@ -41,7 +41,11 @@ export function PhotoPicker({ label, value, onChange, fallback }: Props) {
         type="file"
         accept="image/*"
         style={{ display: 'none' }}
-        onChange={(e) => void onFile(e.target.files?.[0])}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = ''; // so picking the same photo again still fires a change
+          void onFile(file);
+        }}
       />
     </Field>
   );

@@ -4,9 +4,12 @@ import {
   EMPTY_REMINDER_STATE,
   currentStepIndex,
   dueReminder,
+  isStale,
+  loadReminderState,
   markAcknowledged,
   markAnnounced,
   nextThing,
+  saveReminderState,
   stepPhases,
 } from './schedule';
 
@@ -73,6 +76,25 @@ describe('nextThing', () => {
   });
 });
 
+describe('isStale', () => {
+  it('is stale before the time and after 90 minutes, fresh in between', () => {
+    const s = step(1, '12:30');
+    expect(isStale(s, at(12, 0))).toBe(true);
+    expect(isStale(s, at(12, 30))).toBe(false);
+    expect(isStale(s, at(14, 0))).toBe(false);
+    expect(isStale(s, at(14, 1))).toBe(true);
+  });
+});
+
+describe('reminder state persistence', () => {
+  it('survives a reload on the same day and resets on the next', () => {
+    const state = markAcknowledged(markAnnounced(EMPTY_REMINDER_STATE, 1, at(12, 30)), 1, at(12, 31));
+    saveReminderState(state, at(12, 31));
+    expect(loadReminderState(at(12, 50))).toEqual(state);
+    expect(loadReminderState(new Date(2026, 8, 30, 8, 0))).toEqual(EMPTY_REMINDER_STATE);
+  });
+});
+
 describe('dueReminder', () => {
   const steps = [step(1, '12:30', { repeatMinutes: 15 }), step(2, '17:30', { remind: false })];
 
@@ -111,6 +133,14 @@ describe('dueReminder', () => {
 
   it('never fires for a step more than 90 minutes old, so there is no "overdue"', () => {
     expect(dueReminder(steps, EMPTY_REMINDER_STATE, at(14, 30))).toBeNull();
+  });
+
+  it('keeps announcing later steps even when an earlier one was never answered', () => {
+    const two = [step(1, '08:30', { repeatMinutes: 15 }), step(2, '09:00', { repeatMinutes: 15 })];
+    let state = markAnnounced(EMPTY_REMINDER_STATE, 1, at(8, 30));
+    state = markAnnounced(state, 1, at(8, 45));
+    state = markAnnounced(state, 1, at(9, 0));
+    expect(dueReminder(two, state, at(9, 0))?.id).toBe(2);
   });
 
   it('starts fresh on a new day', () => {

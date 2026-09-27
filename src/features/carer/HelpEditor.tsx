@@ -4,7 +4,7 @@ import { useContacts } from '../../app/useLiveData';
 import { updateProfile } from '../../data/db';
 import type { Profile } from '../../data/types';
 import { isLocationSupported, lastSharedLocation, requestLocationPermission } from '../../services/location';
-import { CarerButton, Field, Toggle } from './fields';
+import { Field, Toggle } from './fields';
 import { RecorderControl } from './RecorderControl';
 import { useDraft } from './useDraft';
 
@@ -20,10 +20,16 @@ export function HelpEditor({ profile }: Props) {
   const [reassurance, setReassurance] = useDraft(profile.reassuranceText, (v) => void updateProfile({ reassuranceText: v.trim() }));
   const last = lastSharedLocation();
 
-  const askLocation = async () => {
+  /** The permission prompt happens here, in carer mode. Sharing is stored only when it was granted. */
+  const toggleLocation = async (on: boolean) => {
+    if (!on) {
+      await updateProfile({ shareLocationOnHelp: false });
+      setLocationResult(null);
+      return;
+    }
     const ok = await requestLocationPermission();
     setLocationResult(ok ? 'granted' : 'denied');
-    if (ok) await updateProfile({ shareLocationOnHelp: true });
+    await updateProfile({ shareLocationOnHelp: ok });
   };
 
   return (
@@ -63,13 +69,8 @@ export function HelpEditor({ profile }: Props) {
             label={t('carer.help.shareLocation')}
             hint={t('carer.help.shareLocationHint')}
             checked={profile.shareLocationOnHelp}
-            onChange={(v) => void updateProfile({ shareLocationOnHelp: v })}
+            onChange={(v) => void toggleLocation(v)}
           />
-          {profile.shareLocationOnHelp ? (
-            <div className="chips">
-              <CarerButton onClick={() => void askLocation()}>{t('carer.help.locationPermission')}</CarerButton>
-            </div>
-          ) : null}
           {locationResult === 'granted' ? <p className="field__hint">{t('carer.help.locationGranted')}</p> : null}
           {locationResult === 'denied' ? <p className="notice">{t('carer.help.locationDenied')}</p> : null}
           {last ? (

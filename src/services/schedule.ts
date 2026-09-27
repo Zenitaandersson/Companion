@@ -74,6 +74,38 @@ export function upcomingEvents(events: PlannedEvent[], now: Date): PlannedEvent[
 
 const MAX_REPEATS = 3;
 
+/** A reminder older than this is no longer shown or spoken. There is no "overdue" state. */
+export const STALE_MINUTES = 90;
+
+/** True when the step's time is more than STALE_MINUTES ago, or still in the future. */
+export function isStale(step: RoutineStep, now: Date): boolean {
+  const age = minutesOfDate(now) - minutesOf(step.time);
+  return age < 0 || age > STALE_MINUTES;
+}
+
+const STORAGE_KEY = 'companion.reminderState';
+
+/** Loads the reminder state saved for today, so a reload never repeats a reminder already answered. */
+export function loadReminderState(now: Date): ReminderState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return EMPTY_REMINDER_STATE;
+    const parsed = JSON.parse(raw) as ReminderState & { day?: string };
+    if (parsed.day !== isoDate(now)) return EMPTY_REMINDER_STATE;
+    return { announced: parsed.announced ?? {}, acknowledged: parsed.acknowledged ?? {} };
+  } catch {
+    return EMPTY_REMINDER_STATE;
+  }
+}
+
+export function saveReminderState(state: ReminderState, now: Date): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...state, day: isoDate(now) }));
+  } catch {
+    /* storage unavailable: reminders simply start fresh next time */
+  }
+}
+
 export interface ReminderState {
   /** Step id → timestamp of the last time it was announced today. */
   announced: Record<number, { count: number; lastAt: number; day: string }>;
@@ -95,13 +127,10 @@ export function dueReminder(
   now: Date,
 ): RoutineStep | null {
   const today = isoDate(now);
-  const minutes = minutesOfDate(now);
   const candidates = sortSteps(steps).filter((s) => s.remind && s.id !== undefined);
   for (const step of candidates) {
     const id = step.id as number;
-    const stepMinutes = minutesOf(step.time);
-    if (stepMinutes > minutes) continue;
-    if (minutes - stepMinutes > 90) continue;
+    if (isStale(step, now)) continue;
     if (state.acknowledged[id] === today) continue;
     const record = state.announced[id];
     if (!record || record.day !== today) return step;

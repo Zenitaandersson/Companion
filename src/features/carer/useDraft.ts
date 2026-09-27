@@ -13,9 +13,10 @@ export function useDraft(value: string, save: (next: string) => void, delayMs = 
   const latestDraft = useRef(draft);
   latestDraft.current = draft;
 
-  // Follow outside changes only while the user is not mid-edit.
+  // Follow outside changes only while the user is not mid-edit, and never undo a trailing
+  // space the user just typed when the saved value comes back trimmed.
   useEffect(() => {
-    if (!dirty.current) setDraft(value);
+    if (!dirty.current && value !== latestDraft.current.trim()) setDraft(value);
   }, [value]);
 
   useEffect(

@@ -43,12 +43,9 @@ export function PersonCard({ contact, language, onBack, onBackToToday }: Props) 
       </BigButton>
 
       {href ? (
-        <a className="big-button big-button--primary" href={href} data-testid="call-link">
-          <span className="big-button__icon" aria-hidden="true">
-            📞
-          </span>
-          <span>{t('common.call', { name: contact.firstName })}</span>
-        </a>
+        <BigButton variant="primary" icon="📞" href={href} data-testid="call-link">
+          {t('common.call', { name: contact.firstName })}
+        </BigButton>
       ) : null}
 
       <BigButton variant="quiet" icon="←" onClick={onBack}>

@@ -4,10 +4,12 @@ import { CalmFallback } from '../../design/CalmFallback';
 import { acknowledge } from '../../data/db';
 import type { Contact, FrequentQuestion, Profile } from '../../data/types';
 import {
-  EMPTY_REMINDER_STATE,
   dueReminder,
+  isStale,
+  loadReminderState,
   markAcknowledged,
   markAnnounced,
+  saveReminderState,
   type ReminderState,
 } from '../../services/schedule';
 import { speech } from '../../services/speech';
@@ -54,8 +56,11 @@ export function PersonRoot({ profile, onEnterCarer }: Props) {
   const [screen, setScreen] = useState<PersonScreen>('today');
   const [openContact, setOpenContact] = useState<Contact | null>(null);
   const [openQuestion, setOpenQuestion] = useState<FrequentQuestion | null>(null);
-  const [reminderState, setReminderState] = useState<ReminderState>(EMPTY_REMINDER_STATE);
+  const [reminderState, setReminderState] = useState<ReminderState>(() => loadReminderState(new Date()));
   const [activeReminder, setActiveReminder] = useState<number | null>(null);
+
+  // Keep today's reminder state across reloads so nothing is announced twice after "Thank you".
+  useEffect(() => saveReminderState(reminderState, now), [reminderState, now]);
 
   const goToday = useCallback(() => {
     speech.stop();
@@ -65,15 +70,19 @@ export function PersonRoot({ profile, onEnterCarer }: Props) {
     window.scrollTo({ top: 0 });
   }, []);
 
-  // Reminder engine: check every tick whether a step is due.
+  // Reminder engine. All timing rules live in services/schedule.ts; this only reacts to them.
+  // A due step is spoken and shown. A repeat of the visible step speaks again. A newer step
+  // replaces the visible one, which is then treated as answered so the two never alternate.
   useEffect(() => {
-    if (activeReminder !== null) return;
     const due = dueReminder(steps, reminderState, now);
-    if (due && due.id !== undefined) {
-      setActiveReminder(due.id);
-      setReminderState((s) => markAnnounced(s, due.id as number, now));
-      speech.speak(due.spokenText || t('myDay.reminderTitle', { title: due.title }), profile.language);
-    }
+    if (!due || due.id === undefined) return;
+    const dueId = due.id;
+    setReminderState((s) => {
+      const superseded = activeReminder !== null && activeReminder !== dueId ? markAcknowledged(s, activeReminder, now) : s;
+      return markAnnounced(superseded, dueId, now);
+    });
+    setActiveReminder(dueId);
+    speech.speak(due.spokenText || t('myDay.reminderTitle', { title: due.title }), profile.language);
   }, [now, steps, reminderState, activeReminder, profile.language, t]);
 
   const thanks = () => {
@@ -84,23 +93,12 @@ export function PersonRoot({ profile, onEnterCarer }: Props) {
     speech.stop();
   };
 
-  // Repeats: once the repeat interval passes, hide the banner so the engine can announce again.
+  // The banner stays until "Thank you", or quietly goes when the step is long past or removed.
+  const activeStep = activeReminder !== null ? steps.find((s) => s.id === activeReminder) : undefined;
+  const reminderStep = activeStep && !isStale(activeStep, now) ? activeStep : undefined;
   useEffect(() => {
-    if (activeReminder === null) return;
-    const step = steps.find((s) => s.id === activeReminder);
-    if (!step) {
-      setActiveReminder(null);
-      return;
-    }
-    const record = reminderState.announced[activeReminder];
-    if (!record) return;
-    const ageMinutes = (now.getTime() - record.lastAt) / 60000;
-    if (step.repeatMinutes > 0 && ageMinutes >= step.repeatMinutes && record.count < 3) {
-      setActiveReminder(null);
-    }
-  }, [now, steps, activeReminder, reminderState]);
-
-  const reminderStep = activeReminder !== null ? steps.find((s) => s.id === activeReminder) : undefined;
+    if (activeReminder !== null && !reminderStep) setActiveReminder(null);
+  }, [activeReminder, reminderStep]);
 
   // Hidden corner: hold for two seconds.
   const pressTimer = useRef<number | null>(null);

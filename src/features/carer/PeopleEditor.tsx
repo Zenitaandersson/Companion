@@ -30,13 +30,10 @@ export function PeopleEditor({ profile }: Props) {
   const [editing, setEditing] = useState<Contact | null>(null);
 
   if (editing) {
-    return (
-      <ContactForm
-        contact={editing}
-        isPrimary={editing.id !== undefined && editing.id === profile.primaryContactId}
-        onDone={() => setEditing(null)}
-      />
-    );
+    const isPrimary = editing.id !== undefined && editing.id === profile.primaryContactId;
+    // The first person added becomes who Help calls, unless the carer unticks it.
+    const defaultPrimary = isPrimary || (editing.id === undefined && profile.primaryContactId === null);
+    return <ContactForm contact={editing} isPrimary={isPrimary} defaultPrimary={defaultPrimary} onDone={() => setEditing(null)} />;
   }
 
   return (
@@ -76,14 +73,17 @@ export function PeopleEditor({ profile }: Props) {
 
 interface FormProps {
   contact: Contact;
+  /** Whether this saved contact is currently the one Help calls. */
   isPrimary: boolean;
+  /** Initial state of the "Help calls this person" toggle. */
+  defaultPrimary: boolean;
   onDone: () => void;
 }
 
-function ContactForm({ contact, isPrimary, onDone }: FormProps) {
+function ContactForm({ contact, isPrimary, defaultPrimary, onDone }: FormProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<Contact>(contact);
-  const [primary, setPrimary] = useState(isPrimary);
+  const [primary, setPrimary] = useState(defaultPrimary);
   const set = <K extends keyof Contact>(key: K, value: Contact[K]) => setDraft((d) => ({ ...d, [key]: value }));
 
   const save = async () => {

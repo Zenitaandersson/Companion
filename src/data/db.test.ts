@@ -47,4 +47,10 @@ describe('acknowledgements', () => {
     expect(all).toHaveLength(1);
     expect(all[0]).toMatchObject({ kind: 'question', refId: 3 });
   });
+
+  it('records nothing while the weekly summary is switched off', async () => {
+    await updateProfile({ weeklySummaryEnabled: false }, database);
+    await acknowledge('help', null, database);
+    expect(await database.acknowledgements.count()).toBe(0);
+  });
 });

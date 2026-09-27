@@ -29,13 +29,25 @@ export function requestLocationPermission(): Promise<boolean> {
   });
 }
 
-/** Captures the current position and stores it locally for the carer to see. Never throws. */
-export function captureLocation(): Promise<SharedLocation | null> {
+/** True only when the browser reports permission already granted. Unknown counts as not granted. */
+async function isPermissionGranted(): Promise<boolean> {
+  try {
+    if (!('permissions' in navigator)) return false;
+    const status = await navigator.permissions.query({ name: 'geolocation' });
+    return status.state === 'granted';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Captures the current position and stores it locally for the carer to see. Never throws and
+ * never prompts: if permission was not granted in carer mode, nothing happens.
+ */
+export async function captureLocation(): Promise<SharedLocation | null> {
+  if (!isLocationSupported()) return null;
+  if (!(await isPermissionGranted())) return null;
   return new Promise((resolve) => {
-    if (!isLocationSupported()) {
-      resolve(null);
-      return;
-    }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const loc: SharedLocation = {
