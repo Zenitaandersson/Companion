@@ -13,10 +13,12 @@ interface Props {
   events: PlannedEvent[];
   now: Date;
   onNavigate: (screen: PersonScreen) => void;
+  /** Opens the PIN screen. The PIN is the protection, so this entry is visible but quiet. */
+  onEnterCarer: () => void;
 }
 
 /** The calm home screen: who, when, where, and what comes next. */
-export function Today({ profile, steps, events, now, onNavigate }: Props) {
+export function Today({ profile, steps, events, now, onNavigate, onEnterCarer }: Props) {
   const { t } = useTranslation();
   const language = profile.language;
   const ctx = { profile, steps, events, now, language };
@@ -48,6 +50,11 @@ export function Today({ profile, steps, events, now, onNavigate }: Props) {
       isToday
       title={t('common.today')}
       onBackToToday={() => window.scrollTo({ top: 0 })}
+      belowBar={
+        <button type="button" className="carer-link" onClick={onEnterCarer} data-testid="carer-entry">
+          <span aria-hidden="true">🔑</span> {t('carer.forCarers')}
+        </button>
+      }
       headerAction={
         <BigButton variant="quiet" icon="🔊" onClick={speakAll} aria-label={t('common.readAloud')}>
           {t('common.readAloud')}

@@ -79,12 +79,11 @@
   },
   "carer": {
     "enterTitle": "Carer settings",
-    "enterHint": "Hold the corner for two seconds to open carer settings.",
+    "forCarers": "For carers",
     "pinTitle": "Enter your PIN",
     "pinSetTitle": "Choose a PIN",
     "pinConfirmTitle": "Repeat the PIN",
     "pinMismatch": "The PINs did not match. Try again.",
-    "pinWrong": "That PIN is not right.",
     "pinHelp": "You will use this PIN each time you open carer settings.",
     "cancel": "Cancel",
     "save": "Save",
@@ -250,6 +249,8 @@
       "iphone": "On iPhone: open this page in Safari, tap the Share button, then \"Add to Home Screen\".",
       "android": "On Android: open this page in Chrome, tap the menu, then \"Add to Home screen\" or \"Install app\".",
       "after": "After that, open Companion from the home screen icon. It works without internet.",
+      "entry": "To change anything, tap \"For carers\" at the bottom of the Today screen and enter your PIN.",
+      "sameApp": "Do the setup inside the home screen app. A page open in Safari and the home screen icon keep separate data.",
       "textSize": "Make the text bigger in the phone's Settings under Accessibility. The whole app follows that setting."
     },
     "onboarding": {

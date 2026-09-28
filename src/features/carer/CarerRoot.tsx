@@ -50,8 +50,8 @@ export function CarerRoot({ profile, onClose }: Props) {
     async (pin: string) => {
       setError(null);
       if (gate === 'locked') {
+        // A wrong PIN clears quietly. No warning, no lockout: an accidental tap must feel like nothing.
         if (profile.carerPinHash && (await verifyPin(pin, profile.carerPinHash))) setGate('open');
-        else setError(t('carer.pinWrong'));
       } else if (gate === 'setting') {
         setFirstPin(pin);
         setGate('confirming');
@@ -77,8 +77,9 @@ export function CarerRoot({ profile, onClose }: Props) {
     return (
       <PinPad
         title={title}
-        error={error}
+        notice={error}
         onComplete={(pin) => void onPin(pin)}
+        cancelLabel={changingPin ? t('carer.cancel') : t('common.backToToday')}
         onCancel={() => {
           if (changingPin) {
             setChangingPin(false);

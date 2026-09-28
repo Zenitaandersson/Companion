@@ -7,7 +7,7 @@ Companion is an installable web app (PWA). It runs on iPhone and Android from th
 ## Two modes
 
 - **Person mode** opens by default. Six screens: Today, People, My day, Questions, My life, Help. Every screen has the same "Back to Today" bar at the bottom. No menus, tabs, swipes, modals or timeouts.
-- **Carer mode** is reached by holding the faint dot in the top-right corner for two seconds, then entering a four-digit PIN. All configuration and all permission requests live here.
+- **Carer mode** is reached from a small, quiet "For carers" link under the Today bar, then a four-digit PIN. The PIN is the protection, so the entry is visible rather than hidden. A wrong PIN clears silently with no lockout, and the PIN screen has the same large "Back to Today" button as every other screen. All configuration and all permission requests live here.
 
 ## Architecture
 
@@ -51,6 +51,8 @@ VITE_BASE=/<repo>/ npm run build
 ```
 
 then publish `dist/`. Open the URL on the phone, use Share → Add to Home Screen (iPhone) or Install app (Android).
+
+Do the setup inside the home-screen app. On iOS, a page open in Safari and the home-screen app keep separate storage, so setup done in a Safari tab does not appear in the installed app.
 
 ## Privacy
 

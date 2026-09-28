@@ -11,6 +11,8 @@ interface ScreenProps {
   onBackToToday: () => void;
   /** On the Today screen the bar is still shown, for consistency, but marked as current. */
   isToday?: boolean;
+  /** Optional quiet element rendered inside the bottom bar, under the main button. */
+  belowBar?: ReactNode;
 }
 
 /**
@@ -24,10 +26,11 @@ export function Screen({
   center,
   onBackToToday,
   isToday,
+  belowBar,
 }: ScreenProps) {
   const { t } = useTranslation();
   return (
-    <main className="screen fade-in">
+    <main className={belowBar ? 'screen screen--tall-bar fade-in' : 'screen fade-in'}>
       {title || headerAction ? (
         <header className="screen__header">
           {title ? <h1 className="screen__title">{title}</h1> : <span />}
@@ -45,6 +48,7 @@ export function Screen({
         >
           {isToday ? t('common.today') : t('common.backToToday')}
         </BigButton>
+        {belowBar}
       </nav>
     </main>
   );

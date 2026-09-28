@@ -8,6 +8,8 @@ export function Install() {
       <p>{t('carer.install.iphone')}</p>
       <p>{t('carer.install.android')}</p>
       <p>{t('carer.install.after')}</p>
+      <p>{t('carer.install.sameApp')}</p>
+      <p>{t('carer.install.entry')}</p>
       <p className="field__hint">{t('carer.install.textSize')}</p>
       <p className="field__hint" style={{ overflowWrap: 'anywhere' }}>
         {window.location.origin}

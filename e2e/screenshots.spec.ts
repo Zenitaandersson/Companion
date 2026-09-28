@@ -7,13 +7,7 @@ import { test, type Page } from '@playwright/test';
 const OUT = 'test-results/screens';
 
 async function openCarerMode(page: Page) {
-  const corner = page.getByTestId('carer-entry');
-  const box = await corner.boundingBox();
-  if (!box) throw new Error('corner control not found');
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  await page.mouse.down();
-  await page.waitForTimeout(2300);
-  await page.mouse.up();
+  await page.getByTestId('carer-entry').click();
 }
 
 async function typePin(page: Page, pin: string) {
@@ -26,6 +20,7 @@ test('capture screens', async ({ page }) => {
 
   // Seed through the carer flow so screens have content.
   await openCarerMode(page);
+  await page.screenshot({ path: `${OUT}/pin.png`, fullPage: true, animations: 'disabled' });
   await typePin(page, '1234');
   await typePin(page, '1234');
   await page.getByLabel('First name').fill('Erik');

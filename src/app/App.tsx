@@ -10,8 +10,8 @@ import { CarerRoot } from '../features/carer/CarerRoot';
 type Mode = 'person' | 'carer';
 
 /**
- * Root of the app. Person mode is the default; Carer mode is entered from the hidden
- * corner control and left with an explicit Close button.
+ * Root of the app. Person mode is the default; Carer mode is entered from the "For carers"
+ * link on Today, protected by a PIN, and left with an explicit Close button.
  */
 export function App() {
   const profile = useProfile();

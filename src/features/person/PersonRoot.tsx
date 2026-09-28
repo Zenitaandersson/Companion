@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalmFallback } from '../../design/CalmFallback';
 import { acknowledge } from '../../data/db';
@@ -38,11 +38,9 @@ interface Props {
   onEnterCarer: () => void;
 }
 
-const LONG_PRESS_MS = 2000;
-
 /**
  * Person mode. Plain state-based navigation, one purpose per screen, a reminder banner that
- * appears above any screen, and the hidden long-press corner that leads to carer mode.
+ * appears above any screen. The carer entry is a quiet link on Today, protected by the PIN.
  */
 export function PersonRoot({ profile, onEnterCarer }: Props) {
   const { t } = useTranslation();
@@ -100,21 +98,9 @@ export function PersonRoot({ profile, onEnterCarer }: Props) {
     if (activeReminder !== null && !reminderStep) setActiveReminder(null);
   }, [activeReminder, reminderStep]);
 
-  // Hidden corner: hold for two seconds.
-  const pressTimer = useRef<number | null>(null);
-  const startPress = () => {
-    cancelPress();
-    pressTimer.current = window.setTimeout(() => {
-      pressTimer.current = null;
-      speech.stop();
-      onEnterCarer();
-    }, LONG_PRESS_MS);
-  };
-  const cancelPress = () => {
-    if (pressTimer.current !== null) {
-      window.clearTimeout(pressTimer.current);
-      pressTimer.current = null;
-    }
+  const enterCarer = () => {
+    speech.stop();
+    onEnterCarer();
   };
 
   const openQuestionAndSpeak = (q: FrequentQuestion) => {
@@ -156,7 +142,9 @@ export function PersonRoot({ profile, onEnterCarer }: Props) {
   } else if (screen === 'help') {
     content = <Help profile={profile} contacts={contacts} onBackToToday={goToday} />;
   } else {
-    content = <Today profile={profile} steps={steps} events={events} now={now} onNavigate={setScreen} />;
+    content = (
+      <Today profile={profile} steps={steps} events={events} now={now} onNavigate={setScreen} onEnterCarer={enterCarer} />
+    );
   }
 
   return (
@@ -167,20 +155,6 @@ export function PersonRoot({ profile, onEnterCarer }: Props) {
         </div>
       ) : null}
       {content}
-      <button
-        type="button"
-        className="corner-entry"
-        aria-label={t('carer.enterTitle')}
-        title={t('carer.enterHint')}
-        onPointerDown={startPress}
-        onPointerUp={cancelPress}
-        onPointerLeave={cancelPress}
-        onPointerCancel={cancelPress}
-        onContextMenu={(e) => e.preventDefault()}
-        data-testid="carer-entry"
-      >
-        ·
-      </button>
     </CalmFallback>
   );
 }

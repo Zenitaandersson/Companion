@@ -17,6 +17,7 @@ describe('Today screen', () => {
         events={[{ id: 1, date: '2026-09-29', time: '15:00', text: 'Anna comes' }]}
         now={now}
         onNavigate={() => undefined}
+        onEnterCarer={() => undefined}
       />,
     );
     const card = screen.getByTestId('today-card');
@@ -28,7 +29,7 @@ describe('Today screen', () => {
 
   it('navigates to every section with one tap', () => {
     const onNavigate = vi.fn();
-    render(<Today profile={profile} steps={[]} events={[]} now={now} onNavigate={onNavigate} />);
+    render(<Today profile={profile} steps={[]} events={[]} now={now} onNavigate={onNavigate} onEnterCarer={() => undefined} />);
     fireEvent.click(screen.getByRole('button', { name: /People/ }));
     fireEvent.click(screen.getByRole('button', { name: /My day/ }));
     fireEvent.click(screen.getByRole('button', { name: /Questions/ }));
@@ -38,7 +39,14 @@ describe('Today screen', () => {
   });
 
   it('keeps the bottom bar in place and marks Today as current', () => {
-    render(<Today profile={profile} steps={[]} events={[]} now={now} onNavigate={() => undefined} />);
+    render(<Today profile={profile} steps={[]} events={[]} now={now} onNavigate={() => undefined} onEnterCarer={() => undefined} />);
     expect(screen.getByTestId('back-to-today').getAttribute('aria-current')).toBe('page');
+  });
+
+  it('offers a single-tap carer entry', () => {
+    const onEnterCarer = vi.fn();
+    render(<Today profile={profile} steps={[]} events={[]} now={now} onNavigate={() => undefined} onEnterCarer={onEnterCarer} />);
+    fireEvent.click(screen.getByRole('button', { name: /For carers/ }));
+    expect(onEnterCarer).toHaveBeenCalledTimes(1);
   });
 });

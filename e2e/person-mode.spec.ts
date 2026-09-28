@@ -1,14 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 
-/** Holds the hidden corner control long enough to open carer mode. */
+/** Taps the quiet "For carers" link under the Today bar. */
 async function openCarerMode(page: Page) {
-  const corner = page.getByTestId('carer-entry');
-  const box = await corner.boundingBox();
-  if (!box) throw new Error('corner control not found');
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  await page.mouse.down();
-  await page.waitForTimeout(2300);
-  await page.mouse.up();
+  await page.getByTestId('carer-entry').click();
 }
 
 async function typePin(page: Page, pin: string) {
@@ -100,10 +94,16 @@ test('first launch shows Today, carer sets a PIN, name and routine, person sees 
   // Data survives a reload; carer mode now asks for the PIN.
   await page.reload();
   await expect(card).toContainText('Hello Erik');
+
+  // An accidental tap: the PIN screen has the familiar way home, and a wrong PIN clears quietly.
   await openCarerMode(page);
   await expect(page.getByText('Enter your PIN')).toBeVisible();
+  await page.getByTestId('back-to-today').click();
+  await expect(card).toBeVisible();
+  await openCarerMode(page);
   await typePin(page, '0000');
-  await expect(page.getByText('That PIN is not right.')).toBeVisible();
+  await expect(page.getByText('Enter your PIN')).toBeVisible();
+  await expect(page.locator('.notice')).toHaveCount(0);
   await typePin(page, '1234');
   await expect(page.getByText('Carer settings', { exact: true })).toBeVisible();
 
@@ -118,4 +118,16 @@ test('person mode never scrolls sideways and keeps big tap targets', async ({ pa
   const heights = await page.$$eval('.big-button', (els) => els.map((e) => e.getBoundingClientRect().height));
   expect(heights.length).toBeGreaterThan(0);
   for (const h of heights) expect(h).toBeGreaterThanOrEqual(88);
+});
+
+test('the carer entry is visible on Today only and quieter than the person buttons', async ({ page }) => {
+  await page.goto('/');
+  const entry = page.getByTestId('carer-entry');
+  await expect(entry).toBeVisible();
+  await expect(entry).toHaveText(/For carers/);
+  const entrySize = await entry.evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+  const buttonSize = await page.getByTestId('back-to-today').evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+  expect(entrySize).toBeLessThan(buttonSize);
+  await page.getByRole('button', { name: 'People' }).click();
+  await expect(entry).toHaveCount(0);
 });

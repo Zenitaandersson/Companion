@@ -79,12 +79,11 @@
   },
   "carer": {
     "enterTitle": "Anhöriginställningar",
-    "enterHint": "Håll i hörnet i två sekunder för att öppna anhöriginställningar.",
+    "forCarers": "För anhöriga",
     "pinTitle": "Ange din PIN-kod",
     "pinSetTitle": "Välj en PIN-kod",
     "pinConfirmTitle": "Upprepa PIN-koden",
     "pinMismatch": "Koderna stämde inte överens. Försök igen.",
-    "pinWrong": "Den koden stämmer inte.",
     "pinHelp": "Du använder den här koden varje gång du öppnar anhöriginställningar.",
     "cancel": "Avbryt",
     "save": "Spara",
@@ -250,6 +249,8 @@
       "iphone": "På iPhone: öppna den här sidan i Safari, tryck på Dela-knappen och sedan \"Lägg till på hemskärmen\".",
       "android": "På Android: öppna den här sidan i Chrome, tryck på menyn och sedan \"Lägg till på startskärmen\" eller \"Installera app\".",
       "after": "Öppna sedan Companion från ikonen på hemskärmen. Den fungerar utan internet.",
+      "entry": "För att ändra något, tryck på \"För anhöriga\" längst ner på Idag-skärmen och ange din PIN-kod.",
+      "sameApp": "Gör inställningarna inne i appen på hemskärmen. En sida i Safari och ikonen på hemskärmen har separat data.",
       "textSize": "Gör texten större i telefonens Inställningar under Hjälpmedel. Hela appen följer den inställningen."
     },
     "onboarding": {
